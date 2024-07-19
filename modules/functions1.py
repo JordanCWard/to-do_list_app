@@ -1,4 +1,4 @@
-# list constants at the top of the file, easy to change it once instead of everywhere
+# list constants in capital letters at the top of the file, easy to change it once instead of everywhere
 FILEPATH = "text_files/todo_list1.txt"
 
 def get_todos(filepath=FILEPATH):
