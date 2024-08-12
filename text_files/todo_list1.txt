@@ -11,3 +11,5 @@ Walk the dog
 Clean the code
 Wash the table
 run the dishwasher
+Make the bed
+Run the dishwasher
