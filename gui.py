@@ -1,5 +1,4 @@
 from modules import functions1
-
 import FreeSimpleGUI as sg
 
 label = sg.Text("Type in a to-do")
@@ -15,15 +14,22 @@ list_box = sg.Listbox(values=functions1.get_todos(), key='item_to_edit',
                       enable_events=True, size=[45, 10])
 
 edit_button = sg.Button("Edit list")
+complete_button = sg.Button("Complete")
+exit_button = sg.Button("Exit")
+
+
+window_layout = [[label],
+                 [input_box, add_button],
+                 [list_box, edit_button, complete_button],
+                 [exit_button]]
 
 window = sg.Window("My To-Do App",
-                   layout=[[label],
-                           [input_box, add_button],
-                           [list_box, edit_button]],
+                   window_layout,
                    font=('Helvetica', 20))
 
 # keep the app open after each item is added
 while True:
+
     # assign variables to the first two items in the tuple
     event, values = window.read()
 
@@ -32,46 +38,75 @@ while True:
     print(2, values)
     print(3, values['item_to_edit'])
 
-    match event:
 
-        # the same function from cli file
-        case "Add":
-            todos = functions1.get_todos()
-            new_todo = values['todo'] + "\n"
-            todos.append(new_todo)
-            functions1.write_todos(todos)
+    # if the app is closed by hitting the red x in the corner or the exit button
+    if event == sg.WIN_CLOSED or event == "Exit":
+        break
 
-            window['item_to_edit'].update(values=todos)
 
-        # similar function from cli file
-        case "Edit list":
-            # added 0 to only get the item, remove the newline
-            todo_to_edit = values['item_to_edit'][0]
+    """
+    These if statements check to see if any buttons were selected
+    or if an item from the list was selected.
+    """
 
-            # get the new item from the text box
-            new_todo = values['todo']
+    # adds an item to the list from the input box
+    if event == "Add":
+        todos = functions1.get_todos()
+        new_todo = values['todo'] + "\n"
+        todos.append(new_todo)
+        functions1.write_todos(todos)
+        window['item_to_edit'].update(values=todos)
 
-            # get the list from the text file
-            todo_list = functions1.get_todos()
 
-            # find the item to edit
-            index = todo_list.index(todo_to_edit)
+    # replaces an item in the list with the input in the text box
+    elif event == "Edit list":
+        # added 0 to only get the item, remove the newline
+        todo_to_edit = values['item_to_edit'][0]
 
-            # overwrite the item in the text file
-            todo_list[index] = new_todo
+        # get the new item from the text box
+        new_todo = values['todo']
 
-            # write the updated list to the text file
-            functions1.write_todos(todo_list)
+        # get the list from the text file
+        todo_list = functions1.get_todos()
 
-            # replace the old item in the app with the new item
-            window['item_to_edit'].update(values=todo_list)
+        # find the item to edit
+        index = todo_list.index(todo_to_edit)
 
-        # when an item in the list is selected, this updates the text box with that item
-        case 'item_to_edit':
-            window['todo'].update(value=values['item_to_edit'][0])
+        # overwrite the item in the text file
+        todo_list[index] = new_todo + '\n'
 
-        # if the app is closed by hitting the red x in the corner
-        case sg.WIN_CLOSED:
-            break
+        # write the updated list to the text file
+        functions1.write_todos(todo_list)
+
+        # replace the old item in the app with the new item
+        window['item_to_edit'].update(values=todo_list)
+
+
+    # removes an item from the list
+    elif event == "Complete":
+
+        # store the item that was selected in a variable
+        completed_todo = values['item_to_edit'][0]
+
+        # create a list with the current todos
+        todos_list_temp = functions1.get_todos()
+
+        # remove the selected item from the list
+        todos_list_temp.remove(completed_todo)
+
+        # write the new list to the text file
+        functions1.write_todos(todos_list_temp)
+
+        # update the window with the new list
+        window['item_to_edit'].update(values=todos_list_temp)
+
+        # clear the input window
+        window['todo'].update(value="")
+
+
+    # when an item in the list is selected, this updates the text box with that item
+    elif event == 'item_to_edit':
+        window['todo'].update(value=values['item_to_edit'][0].strip('\n'))
+
 
 window.close()
