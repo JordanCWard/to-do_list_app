@@ -1,6 +1,11 @@
 from modules import functions1
 import FreeSimpleGUI as sg
+import time
 
+# more themes: https://docs.pysimplegui.com/en/latest/documentation/module/themes/
+sg.theme("DarkTeal12")
+
+clock = sg.Text('', key="clock_key")
 label = sg.Text("Type in a to-do")
 
 # allow the user to enter to do then add a key to the item to reference it in the future
@@ -18,7 +23,8 @@ complete_button = sg.Button("Complete")
 exit_button = sg.Button("Exit")
 
 
-window_layout = [[label],
+window_layout = [[clock],
+                 [label],
                  [input_box, add_button],
                  [list_box, edit_button, complete_button],
                  [exit_button]]
@@ -27,11 +33,13 @@ window = sg.Window("My To-Do App",
                    window_layout,
                    font=('Helvetica', 20))
 
-# keep the app open after each item is added
+# loop reoccurs every time the user does something
 while True:
 
     # assign variables to the first two items in the tuple
-    event, values = window.read()
+    # added a timeout which reruns the loop every 200 milliseconds so that the clock updates
+    event, values = window.read(timeout=200)
+    window["clock_key"].update(value=time.strftime("%b %d, %Y %H:%M:%S"))
 
     # easy way to see what is happening, not needed in final code
     print(1, event)
@@ -60,48 +68,63 @@ while True:
 
     # replaces an item in the list with the input in the text box
     elif event == "Edit list":
-        # added 0 to only get the item, remove the newline
-        todo_to_edit = values['item_to_edit'][0]
 
-        # get the new item from the text box
-        new_todo = values['todo']
+        # if the user selects edit list without selecting an item first, an index error will occur
+        try:
 
-        # get the list from the text file
-        todo_list = functions1.get_todos()
+            # added 0 to only get the item, remove the newline
+            todo_to_edit = values['item_to_edit'][0]
 
-        # find the item to edit
-        index = todo_list.index(todo_to_edit)
+            # get the new item from the text box
+            new_todo = values['todo']
 
-        # overwrite the item in the text file
-        todo_list[index] = new_todo + '\n'
+            # get the list from the text file
+            todo_list = functions1.get_todos()
 
-        # write the updated list to the text file
-        functions1.write_todos(todo_list)
+            # find the item to edit
+            index = todo_list.index(todo_to_edit)
 
-        # replace the old item in the app with the new item
-        window['item_to_edit'].update(values=todo_list)
+            # overwrite the item in the text file
+            todo_list[index] = new_todo + '\n'
+
+            # write the updated list to the text file
+            functions1.write_todos(todo_list)
+
+            # replace the old item in the app with the new item
+            window['item_to_edit'].update(values=todo_list)
+
+        # if the user selects edit list without selecting an item first, an index error will occur
+        except IndexError:
+            sg.popup("Please select an item first", font=("Helvetica", 20))
 
 
     # removes an item from the list
     elif event == "Complete":
 
-        # store the item that was selected in a variable
-        completed_todo = values['item_to_edit'][0]
+        # if the user selects complete without selecting an item first, an index error will occur
+        try:
 
-        # create a list with the current todos
-        todos_list_temp = functions1.get_todos()
+            # store the item that was selected in a variable
+            completed_todo = values['item_to_edit'][0]
 
-        # remove the selected item from the list
-        todos_list_temp.remove(completed_todo)
+            # create a list with the current todos
+            todos_list_temp = functions1.get_todos()
 
-        # write the new list to the text file
-        functions1.write_todos(todos_list_temp)
+            # remove the selected item from the list
+            todos_list_temp.remove(completed_todo)
 
-        # update the window with the new list
-        window['item_to_edit'].update(values=todos_list_temp)
+            # write the new list to the text file
+            functions1.write_todos(todos_list_temp)
 
-        # clear the input window
-        window['todo'].update(value="")
+            # update the window with the new list
+            window['item_to_edit'].update(values=todos_list_temp)
+
+            # clear the input window
+            window['todo'].update(value="")
+
+        # if the user selects complete without selecting an item first, an index error will occur
+        except IndexError:
+            sg.popup("Please select an item first", font=("Helvetica", 20))
 
 
     # when an item in the list is selected, this updates the text box with that item
