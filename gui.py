@@ -1,5 +1,5 @@
 import functions
-import FreeSimpleGUI as sg
+import FreeSimpleGUI as Sg
 import time
 import os
 
@@ -9,24 +9,24 @@ if not os.path.exists("todo_list.txt"):
         pass
 
 # more themes: https://docs.pysimplegui.com/en/latest/documentation/module/themes/
-sg.theme("DarkTeal12")
+Sg.theme("DarkTeal12")
 
-clock = sg.Text('', key="clock_key")
-label = sg.Text("Type in a to-do")
+clock = Sg.Text('', key="clock_key")
+label = Sg.Text("Type in a to-do")
 
 # allow the user to enter to do then add a key to the item to reference it in the future
-input_box = sg.InputText(tooltip="Enter todo",
+input_box = Sg.InputText(tooltip="Enter todo",
                          key="todo")
 
-add_button = sg.Button("Add")
+add_button = Sg.Button("Add")
 
 # list of all current todos
-list_box = sg.Listbox(values=functions.get_todos(), key='item_to_edit',
-                      enable_events=True, size=[45, 10])
+list_box = Sg.Listbox(values=functions.get_todos(), key='item_to_edit',
+                      enable_events=True, size=(45, 10))
 
-edit_button = sg.Button("Edit list")
-complete_button = sg.Button("Complete")
-exit_button = sg.Button("Exit")
+edit_button = Sg.Button("Edit list")
+complete_button = Sg.Button("Complete")
+exit_button = Sg.Button("Exit")
 
 
 window_layout = [[clock],
@@ -35,7 +35,7 @@ window_layout = [[clock],
                  [list_box, edit_button, complete_button],
                  [exit_button]]
 
-window = sg.Window("My To-Do App",
+window = Sg.Window("My To-Do App",
                    window_layout,
                    font=('Helvetica', 20))
 
@@ -46,7 +46,7 @@ while True:
     event, values = window.read(timeout=200)
 
     # if the app is closed by hitting the red x in the corner or the exit button
-    if event == sg.WIN_CLOSED or event == "Exit":
+    if event == Sg.WIN_CLOSED or event == "Exit":
         break
 
 
@@ -105,7 +105,7 @@ while True:
 
         # if the user selects edit list without selecting an item first, an index error will occur
         except IndexError:
-            sg.popup("Please select an item first", font=("Helvetica", 20))
+            Sg.popup("Please select an item first", font=("Helvetica", 20))
 
 
     # removes an item from the list
@@ -134,7 +134,7 @@ while True:
 
         # if the user selects complete without selecting an item first, an index error will occur
         except IndexError:
-            sg.popup("Please select an item first", font=("Helvetica", 20))
+            Sg.popup("Please select an item first", font=("Helvetica", 20))
 
 
     # when an item in the list is selected, this updates the text box with that item
