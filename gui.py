@@ -1,6 +1,12 @@
-from modules import functions1
+import functions
 import FreeSimpleGUI as sg
 import time
+import os
+
+# checks if the file exists, if not then it creates it
+if not os.path.exists("todo_list.txt"):
+    with open("todo_list.txt", "w") as file:
+        pass
 
 # more themes: https://docs.pysimplegui.com/en/latest/documentation/module/themes/
 sg.theme("DarkTeal12")
@@ -15,7 +21,7 @@ input_box = sg.InputText(tooltip="Enter todo",
 add_button = sg.Button("Add")
 
 # list of all current todos
-list_box = sg.Listbox(values=functions1.get_todos(), key='item_to_edit',
+list_box = sg.Listbox(values=functions.get_todos(), key='item_to_edit',
                       enable_events=True, size=[45, 10])
 
 edit_button = sg.Button("Edit list")
@@ -63,10 +69,10 @@ while True:
 
     # adds an item to the list from the input box
     if event == "Add":
-        todos = functions1.get_todos()
+        todos = functions.get_todos()
         new_todo = values['todo'] + "\n"
         todos.append(new_todo)
-        functions1.write_todos(todos)
+        functions.write_todos(todos)
         window['item_to_edit'].update(values=todos)
 
 
@@ -83,7 +89,7 @@ while True:
             new_todo = values['todo']
 
             # get the list from the text file
-            todo_list = functions1.get_todos()
+            todo_list = functions.get_todos()
 
             # find the item to edit
             index = todo_list.index(todo_to_edit)
@@ -92,7 +98,7 @@ while True:
             todo_list[index] = new_todo + '\n'
 
             # write the updated list to the text file
-            functions1.write_todos(todo_list)
+            functions.write_todos(todo_list)
 
             # replace the old item in the app with the new item
             window['item_to_edit'].update(values=todo_list)
@@ -112,13 +118,13 @@ while True:
             completed_todo = values['item_to_edit'][0]
 
             # create a list with the current todos
-            todos_list_temp = functions1.get_todos()
+            todos_list_temp = functions.get_todos()
 
             # remove the selected item from the list
             todos_list_temp.remove(completed_todo)
 
             # write the new list to the text file
-            functions1.write_todos(todos_list_temp)
+            functions.write_todos(todos_list_temp)
 
             # update the window with the new list
             window['item_to_edit'].update(values=todos_list_temp)
