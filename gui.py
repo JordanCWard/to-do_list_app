@@ -37,8 +37,14 @@ window = sg.Window("My To-Do App",
 while True:
 
     # assign variables to the first two items in the tuple
-    # added a timeout which reruns the loop every 200 milliseconds so that the clock updates
     event, values = window.read(timeout=200)
+
+    # if the app is closed by hitting the red x in the corner or the exit button
+    if event == sg.WIN_CLOSED or event == "Exit":
+        break
+
+
+    # added a timeout which reruns the loop every 200 milliseconds so that the clock updates
     window["clock_key"].update(value=time.strftime("%b %d, %Y %H:%M:%S"))
 
     # easy way to see what is happening, not needed in final code
@@ -47,9 +53,7 @@ while True:
     print(3, values['item_to_edit'])
 
 
-    # if the app is closed by hitting the red x in the corner or the exit button
-    if event == sg.WIN_CLOSED or event == "Exit":
-        break
+
 
 
     """
